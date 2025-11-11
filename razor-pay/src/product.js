@@ -57,13 +57,14 @@ export default function Product() {
             };
 
             // 1) create order on backend
-            const orderResp = await fetch("http://localhost:5500/order", {
+            const orderResp = await fetch("https://icypdyigwb.execute-api.ap-south-1.amazonaws.com/dev/order", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(option),
             });
-            const orderRes = await orderResp.json();
-
+            const dataJson = await orderResp.json();
+            const orderRes = dataJson['body-json'];
+            console.log("Order Response:", orderRes);
             // If your backend uses { success: true } style, adjust checks accordingly.
             if (!orderRes || orderRes.statusCode !== 200) {
                 alert("Error creating order. Check backend logs.");
@@ -83,12 +84,13 @@ export default function Product() {
                 handler: async function (response) {
                     // 3) validate payment with backend
                     try {
-                        const validation = await fetch("http://localhost:5500/order/validate", {
+                        const validation = await fetch("https://icypdyigwb.execute-api.ap-south-1.amazonaws.com/dev/verification", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(response),
                         });
-                        const validateRes = await validation.json();
+                        const verificationJson = await validation.json();
+                        const validateRes = verificationJson['body-json'];
                         if (validateRes && validateRes.statusCode === 200) {
                             alert(`Payment Successful ✅\nProduct: ${item.name}\nAmount: ₹${item.price}`);
                             // optionally update UI, save order to DB, etc.
