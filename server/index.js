@@ -7,7 +7,7 @@ require('dotenv').config();
 
 
 const app = express();
-const port = process.env.port;
+const port = process.env.port || 8080;
 // console.log(process.env.PORT)
 
 app.use(express.json());

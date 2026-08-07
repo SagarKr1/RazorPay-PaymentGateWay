@@ -36,7 +36,6 @@ const ProductList = [
     { id: "10", name: "Nescafe Gold Coffee", image: img4, price: 120 },
     { id: "11", name: "Surf Excel Matic", image: img5, price: 180 },
     { id: "12", name: "Fitness Dry Fruit", image: img6, price: 350 },
-
 ];
 
 export default function Product() {
@@ -57,13 +56,16 @@ export default function Product() {
             };
 
             // 1) create order on backend
-            const orderResp = await fetch("https://icypdyigwb.execute-api.ap-south-1.amazonaws.com/dev/order", {
+            const orderResp = await fetch("http://localhost:8080/order", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(option),
             });
+            
             const dataJson = await orderResp.json();
-            const orderRes = dataJson['body-json'];
+            console.log("Data Json",dataJson);
+            
+            const orderRes = dataJson;
             console.log("Order Response:", orderRes);
             // If your backend uses { success: true } style, adjust checks accordingly.
             if (!orderRes || orderRes.statusCode !== 200) {
@@ -74,7 +76,7 @@ export default function Product() {
 
             // 2) prepare Razorpay options
             const rzpOptions = {
-                key: "rzp_test_RdysQNuzfz5Z3F", // replace with your test key or load from env in real app
+                key: "rzp_test_TEwXt6lvQ8LnF9", // replace with your test key or load from env in real app
                 amount: pricePaise,
                 currency: "INR",
                 name: "My Store",
@@ -84,13 +86,13 @@ export default function Product() {
                 handler: async function (response) {
                     // 3) validate payment with backend
                     try {
-                        const validation = await fetch("https://icypdyigwb.execute-api.ap-south-1.amazonaws.com/dev/verification", {
+                        const validation = await fetch("http://localhost:8080/order/validate", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(response),
                         });
                         const verificationJson = await validation.json();
-                        const validateRes = verificationJson['body-json'];
+                        const validateRes = verificationJson;
                         if (validateRes && validateRes.statusCode === 200) {
                             alert(`Payment Successful ✅\nProduct: ${item.name}\nAmount: ₹${item.price}`);
                             // optionally update UI, save order to DB, etc.
